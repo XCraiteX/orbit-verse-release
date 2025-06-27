@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block title %}Основные настройки{% endblock %}
+{% block content %}
+<h1 style="margin-top: 0;">Основные настройки</h1>
+<form id="main-settings-form" class="data-block">
+    <label>
+        <div class="label-flex">
+            <span>⭐️ Требуется имя:</span>
+            <select name="needname">
+                <option value="true" {% if settings.get('needname') %}selected{% endif %}>Да</option>
+                <option value="false" {% if not settings.get('needname') %}selected{% endif %}>Нет</option>
+            </select>
+        </div>
+        <small class="hint">*Если выбрано «Да», помощник будет реагировать только при обращении по имени.</small>
+    </label>
+    <label>
+        <div class="label-flex">
+            <span>📯 Использовать озвучку:</span>
+            <select name="usevoice">
+                <option value="true" {% if settings.get('usevoice') %}selected{% endif %}>Да</option>
+                <option value="false" {% if not settings.get('usevoice') %}selected{% endif %}>Нет</option>
+            </select>
+        </div>
+        <small class="hint">*Включает или отключает голосовой отклик помощника.</small>
+    </label>
+    <label>
+        <div class="label-flex">
+            <span>🎺 Громкость голоса:</span>
+            <input type="number" name="volume" value="{{ (settings.get('volume', '') * 100)|int }}" class="small-input" min="0" max="100" step="5">
+            <p>%</p>
+        </div>
+        
+        <small class="hint">*Включает или отключает голосовой отклик помощника.</small>
+    </label>
+    <label>
+        <div class="label-flex">
+            <span>📂 Имя используемой озвучки:</span>
+            <input type="text" name="voicename" value="{{ settings.get('voicename', '') }}" class="def-input">
+        </div>
+        <small class="hint">*Название папки озвучки files/voices/.../</small>
+    </label>
+    <label>
+        <div class="label-flex">
+            <span>🎭 Имена для отклика:</span>
+            <input type="text" name="names" value="{{ ', '.join(settings.get('names', [])) }}">
+        </div>
+        <small class="hint">*Список имён, на которые помощник будет реагировать (через запятую)</small>
+    </label>
+    <div class="btn-with-status">
+        <button type="submit">💾 Сохранить изменения</button><div id="main-save-status" class="save-status"></div>
+    </div>
+</form>
+
+<h1>Отображение трея</h1>
+<form id="tray-settings-form" class="data-block">
+    <label>
+        <div class="label-flex">
+            <span>🛠️ Функции:</span>
+            <select name="functions">
+                <option value="true" {% if settings.get('tray_view').get('functions') %}selected{% endif %}>Да</option>
+                <option value="false" {% if not settings.get('tray_view').get('functions') %}selected{% endif %}>Нет</option>
+            </select>
+        </div>
+        <small class="hint">*Отображение кнопки Функций (переносит на redlite.ru/orbit)</small>
+    </label>
+    <label>
+        <div class="label-flex">
+            <span>📜 Логи:</span>
+            <select name="logs">
+                <option value="true" {% if settings.get('tray_view').get('logs') %}selected{% endif %}>Да</option>
+                <option value="false" {% if not settings.get('tray_view').get('logs') %}selected{% endif %}>Нет</option>
+            </select>
+        </div>
+        <small class="hint">*Отображение кнопки Логов (открывает логирование Орбита)</small>
+    </label>
+    <label>
+        <div class="label-flex">
+            <span>🔄 Синхронизация:</span>
+            <select name="sync">
+                <option value="true" {% if settings.get('tray_view').get('sync') %}selected{% endif %}>Да</option>
+                <option value="false" {% if not settings.get('tray_view').get('sync') %}selected{% endif %}>Нет</option>
+            </select>
+        </div>
+        <small class="hint">*Отображение кнопки Синхронизации (загружает все конфиги)</small>
+    </label>
+    <label>
+        <div class="label-flex">
+            <span>🧩 Модули:</span>
+            <select name="modules">
+                <option value="true" {% if settings.get('tray_view').get('modules') %}selected{% endif %}>Да</option>
+                <option value="false" {% if not settings.get('tray_view').get('modules') %}selected{% endif %}>Нет</option>
+            </select>
+        </div>
+        <small class="hint">*Отображение кнопки Модулей (загрузка игрового модуля из списка на выбор)</small>
+    </label>
+    <label>
+        <div class="label-flex">
+            <span>⚙️ Настройки:</span>
+            <select name="settings">
+                <option value="true" {% if settings.get('tray_view').get('settings') %}selected{% endif %}>Да</option>
+                <option value="false" {% if not settings.get('tray_view').get('settings') %}selected{% endif %}>Нет</option>
+            </select>
+        </div>
+        <small class="hint">*Отображение кнопки Настроек (открывает эту страниу)</small>
+    </label>
+    <label>
+        <div class="label-flex">
+            <span>🚪 Выход:</span>
+            <select name="exit">
+                <option value="true" {% if settings.get('tray_view').get('exit') %}selected{% endif %}>Да</option>
+                <option value="false" {% if not settings.get('tray_view').get('exit') %}selected{% endif %}>Нет</option>
+            </select>
+        </div>
+        <small class="hint">*Отображение кнопки Выход (полность закрывает Орбита)</small>
+    </label>
+    <div class="btn-with-status">
+        <button type="submit">💾 Сохранить</button><div id="tray-save-status" class="save-status"></div>
+    </div>
+</form>
+<script>
+
+    const settings = JSON.parse('{{ settings | tojson | safe }}');
+    document.getElementById('main-settings-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const form = e.target;
+        const data = {
+            ...settings,
+            needname: form.needname.value === 'true',
+            usevoice: form.usevoice.value === 'true',
+            names: form.names.value.split(',').map(s => s.trim()).filter(Boolean),
+            voicename: form.voicename.value,
+            volume: form.volume.value/100
+        };
+        try {
+            await axios.post('/api/settings/main', data);
+            document.getElementById('main-save-status').textContent = 'Сохранено!';
+        } catch (err) {
+            document.getElementById('main-save-status').textContent = 'Ошибка сохранения!';
+        }
+    });
+
+    document.getElementById('tray-settings-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const form = e.target;
+        const data = {
+            ...settings,
+            functions: form.functions.value === 'true',
+            logs: form.logs.value === 'true',
+            sync: form.sync.value === 'true',
+            modules: form.modules.value === 'true',
+            settings: form.settings.value === 'true',
+            exit: form.exit.value === 'true',
+        };
+        try {
+            await axios.post('/api/settings/tray', data);
+            document.getElementById('tray-save-status').textContent = 'Сохранено!';
+        } catch (err) {
+            document.getElementById('tray-save-status').textContent = 'Ошибка сохранения!';
+        }
+    });
+
+</script>
+{% endblock %}

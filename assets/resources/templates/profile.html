@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Профиль{% endblock %}
+{% block content %}
+<div style="max-width: 480px; margin: 32px auto; background: #181d27; border-radius: 16px; box-shadow: 0 2px 12px #000; padding: 32px 24px;">
+    <div style="display: flex; align-items: center; gap: 20px;">
+        <div style="width: 72px; height: 72px; border-radius: 50%; background: #232b3b; display: flex; align-items: center; justify-content: center; font-size: 40px;">
+            <span id="profile-avatar">🌎</span>
+        </div>
+        <div>
+            <h2 id="profile-username" style="margin: 0 0 6px 0;">Пользователь</h2>
+            <div style="color: #aaa; font-size: 15px;">
+                <span id="profile-email">user@email.com</span>
+            </div>
+        </div>
+    </div>
+    <hr style="margin: 24px 0; border: none; border-top: 1px solid #232b3b;">
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+        <!-- <div>
+            <span style="color:#888;">🕒 Последний вход:</span>
+            <span id="profile-last-login">-</span>
+        </div> -->
+        <div>
+            <span style="color:#888;">🌎 Язык интерфейса:</span>
+            <span id="profile-lang">Русский</span>
+        </div>
+        <div>
+            <span style="color:#888;">🎨 Тема:</span>
+            <span id="profile-theme">Тёмная</span>
+        </div>
+        <!-- <div>
+            <span style="color:#888;">🆔 ID пользователя:</span>
+            <span id="profile-id">-</span>
+        </div> -->
+    </div>
+    <!-- <hr style="margin: 24px 0; border: none; border-top: 1px solid #232b3b;"> -->
+    <!-- <div style="display: flex; gap: 12px;">
+        <button type="button" onclick="alert('Скоро!')" style="flex:1;">✏️ Редактировать</button>
+        <button type="button" onclick="alert('Скоро!')" style="flex:1;">🔒 Сменить пароль</button>
+    </div> -->
+</div>
+<script>
+// Здесь можно подгружать данные профиля с сервера, если появится API
+// Пока что просто примерные данные
+const profile = {
+    username: "Вы вошли как",
+    email: `{{ settings['redlite-email'] }}`,
+    lastLogin: "2024-06-01 13:45",
+    lang: "Русский",
+    theme: "Тёмная",
+    id: "user-001"
+};
+
+document.getElementById('profile-username').textContent = profile.username;
+document.getElementById('profile-email').textContent = profile.email;
+document.getElementById('profile-last-login').textContent = profile.lastLogin;
+document.getElementById('profile-lang').textContent = profile.lang;
+document.getElementById('profile-theme').textContent = profile.theme;
+document.getElementById('profile-id').textContent = profile.id;
+
+// Можно сделать аватар с инициалами
+function getInitials(name) {
+    if (!name) return "👤";
+    const parts = name.split(' ');
+    if (parts.length === 1) return parts[0][0].toUpperCase();
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+}
+document.getElementById('profile-avatar').textContent = getInitials(profile.username);
+
+</script>
+{% endblock %}

@@ -1,0 +1,17 @@
+{
+    "screenshots": {
+        "words": [
+            "скрины",
+            "скриншот"
+        ],
+        "uri": "files\\screenshots\\",
+        "flag": "sure"
+    },
+    "logs": {
+        "words": [
+            "папку лог"
+        ],
+        "uri": "files\\logs\\",
+        "flag": "sure"
+    }
+}

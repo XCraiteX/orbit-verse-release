@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% block title %}Озвучки{% endblock %}
+{% block content %}
+<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+    <h1 style="margin: 0;">Флаги озвучки</h1>
+    <button id="add-voice-btn" type="button">➕ Добавить озвучку</button>
+</div>
+<form id="voices-form">
+    <div id="voices-list"></div>
+    <div class="btn-with-status" style="margin-top: 24px;">
+        <button type="submit">💾 Сохранить изменения</button>
+        <div id="save-status"></div>
+    </div>
+</form>
+
+<!-- Модальное окно для добавления новой озвучки -->
+<div id="modal-bg" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:#181d27; padding:32px 24px; border-radius:12px; min-width:320px; box-shadow:0 2px 12px #000;">
+        <h2 style="margin-top:0;">Добавить озвучку</h2>
+        <form id="add-voice-form">
+            <label>
+                <span>📌 Флаг:</span>
+                <input type="text" name="flag" required>
+                <p class="hint">*Произвольное название</p>
+            </label>
+            <label>
+                <span>🗂️ Путь к файлу:</span>
+                <input type="text" name="uri" required>
+                <p class="hint">*Для случайного выбора - через запятую</p>
+            </label>
+            <div style="display:flex; gap:12px; margin-top:16px;">
+                <button type="submit">✅ Добавить</button>
+                <button type="button" id="close-modal-btn">Отмена</button>
+            </div>
+            <div id="add-status"></div>
+        </form>
+    </div>
+</div>
+
+<script>
+    let voicesData = {};
+
+    async function loadVoices() {
+        const resp = await axios.get('/api/voices');
+        voicesData = resp.data;
+        renderVoices();
+    }
+
+    function renderVoices() {
+        const list = document.getElementById('voices-list');
+        list.innerHTML = '';
+        Object.entries(voicesData).forEach(([flag, v], idx) => {
+            let uriValue = Array.isArray(v.uri) ? v.uri.join(', ') : (v.uri || '');
+            const block = document.createElement('div');
+            block.className = 'data-block';
+            block.style.marginBottom = '18px';
+            block.innerHTML = `
+            <div class="label-flex between">  
+                <div>  
+                <div class="label-flex" style="margin-bottom:8px;">
+                    <span style="min-width:50px;">📌 Флаг:</span>
+                    <input type="text" name="flag" value="${v.flag}" data-idx="${idx}" required class="lg-input">
+                    <p class="hint">*Любое название без пробелов</p>
+                </div>
+                <div class="label-flex">
+                    <span style="min-width:50px;">🗂️ Путь:</span>
+                    <input type="text" name="uri" value="${uriValue}" data-idx="${idx}" required class="lg-input">
+                    <p class="hint">*Путь к файлу files/voices/name/<span class="primary">путь.wav</span></p>
+                </div>
+                </div>
+                    <div style="align-items:end;height:100%;">
+                        <button type="button" class="delete-voice-btn" data-flag="${flag}" style="background:#a33;">Удалить</button>
+                    <div>
+                </div>
+            `;
+            list.appendChild(block);
+
+            const deleteBtn = block.querySelector('.delete-voice-btn');
+            deleteBtn.onclick = async function() {
+                if (confirm(`Удалить озвучку "${flag}"?`)) {
+                    try {
+                        await axios.delete(`/api/voices/${flag}`);
+                        loadVoices();
+                    } catch (err) {
+                        alert('Ошибка удаления!');
+                    }
+                }
+            };
+        });
+    }
+
+    // Модалка
+    const modalBg = document.getElementById('modal-bg');
+    document.getElementById('add-voice-btn').onclick = () => { modalBg.style.display = 'flex'; };
+    document.getElementById('close-modal-btn').onclick = () => { modalBg.style.display = 'none'; };
+
+    document.getElementById('add-voice-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const form = e.target;
+        const uriRaw = form.uri.value.trim();
+        let uri;
+        if (uriRaw === '') {
+            uri = [];
+        } else if (uriRaw.includes(',')) {
+            uri = uriRaw.split(',').map(s => s.trim()).filter(Boolean);
+        } else {
+            uri = uriRaw;
+        }
+        const data = {
+            flag: form.flag.value.trim(),
+            uri
+        };
+        try {
+            await axios.post('/api/voices', data);
+            document.getElementById('add-status').textContent = 'Добавлено!';
+            form.reset();
+            setTimeout(() => {
+                document.getElementById('add-status').textContent = '';
+                modalBg.style.display = 'none';
+            }, 1000);
+            loadVoices();
+        } catch (err) {
+            document.getElementById('add-status').textContent = 'Ошибка!';
+        }
+    });
+
+    document.getElementById('voices-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        // Собираем все формы
+        const blocks = document.querySelectorAll('#voices-list .data-block');
+        let ok = true;
+        for (let i = 0; i < blocks.length; i++) {
+            const flag = blocks[i].querySelector('input[name="flag"]').value.trim();
+            const uriRaw = blocks[i].querySelector('input[name="uri"]').value.trim();
+            let uri;
+            if (uriRaw === '') {
+                uri = [];
+            } else if (uriRaw.includes(',')) {
+                uri = uriRaw.split(',').map(s => s.trim()).filter(Boolean);
+            } else {
+                uri = uriRaw;
+            }
+            try {
+                await axios.put(`/api/voices/${Object.keys(voicesData)[i]}`, { flag, uri });
+            } catch (err) {
+                ok = false;
+            }
+        }
+        document.getElementById('save-status').textContent = ok ? 'Сохранено!' : 'Ошибка сохранения!';
+        setTimeout(() => document.getElementById('save-status').textContent = '', 2000);
+        loadVoices();
+    });
+
+    loadVoices();
+</script>
+{% endblock %} 

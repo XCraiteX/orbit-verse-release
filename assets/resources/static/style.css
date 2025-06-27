@@ -1,0 +1,267 @@
+html, body {
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+body { 
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #10131a;
+    color: #e3e6eb;
+}
+
+header { 
+    background: #282f3d; 
+    color: #fff; 
+    box-shadow: 0 2px 8px 0 #0a0c14;
+    height: 8vh;
+}
+
+/* nav { 
+    display: flex;
+    gap: 30px; 
+    padding: 20px 40px;
+} */
+
+nav a {
+    color: #e3e6eb;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1.1em;
+    padding: 8px 18px;
+    border-radius: 6px;
+    transition: background 0.2s, color 0.2s;
+    letter-spacing: 0.5px;
+}
+
+nav a.active, nav a:hover { 
+    background: #232a3a; 
+    color: #5bbcff;
+}
+
+main { 
+    padding: 40px 60px; 
+}
+
+.data-block{ 
+    padding: 24px;
+    border-radius: 12px;
+    background-color: #181d27;
+    box-shadow: 0 2px 12px 0 #0a0c14;
+    margin-bottom: 52px;
+    border-left: 4px solid #3a8fd8;
+}
+
+h1, h2, h3, h4 {
+    color: #fff;
+    font-weight: 600;
+}
+
+label, span, p {
+    color: #e3e6eb;
+    font-size: 1.05em;
+}
+
+label {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 22px;
+}
+
+select{
+    width: fit-content;
+}
+
+.def-input{
+    width: 200px;
+}
+.small-input{
+    width: 60px;
+}
+.lg-input{
+    width: 320px;
+}
+
+input[type="text"], input[type="number"], select {
+    background: #10131a;
+    color: #fff;
+    /* border: 1px solid #3a8fd8; */
+    border: 1px solid #10131a;
+    /* border: none; */
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-top: 2px;
+    margin-bottom: 0;
+    font-size: 1em;
+    outline: none;
+    transition: border 0.2s;
+}
+input:focus, select:focus {
+    border: 1px solid #5bbcff;
+}
+
+input[type="checkbox"] {
+    accent-color: #3a8fd8;
+    width: 20px;
+    height: 20px;
+}
+
+button { 
+    padding: 10px 24px; 
+    border-radius: 6px; 
+    border: none; 
+    background: linear-gradient(90deg, #232a3a 0%, #3a8fd8 100%);
+    color: #fff; 
+    font-weight: 600; 
+    font-size: 1.05em;
+    cursor: pointer; 
+    box-shadow: 0 2px 8px 0 #0a0c14;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+
+button:hover {
+    background: linear-gradient(90deg, #232a3a 0%, #50a6f0 100%);
+    box-shadow: 0 4px 16px 0 #232a3a55;
+    color: #fff;
+    filter: brightness(1.05);
+}
+
+.btn-with-status{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.save-status {
+    display: flex;
+    align-items: center;
+    font-size: 1.05em;
+    color: #3a8fd8;
+    font-weight: 500;
+}
+
+.hint {
+    color: #8ca0b3;
+    font-size: 0.97em;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    line-height: 1.3;
+} 
+
+span .primary{
+    color: #3a8fd8;
+}
+
+.label-flex{
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 8px;
+}
+
+.between{
+    justify-content: space-between;
+}
+
+/* --- Layout & Sidebar --- */
+.layout {
+    min-height: 100vh;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-container {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+}
+
+.sidebar {
+    width: 220px;
+    background: #181d27;
+    /* box-shadow: 2px 0 12px 0 #0a0c14; */
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.sidebar nav {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+}
+
+.sidebar nav a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 24px;
+    font-size: 1.08em;
+    border-radius: 8px 0 0 8px;
+    color: #e3e6eb;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+}
+
+.sidebar nav a.active, .sidebar nav a:hover {
+    background: #232a3a;
+    color: #5bbcff;
+}
+
+.nav-icon {
+    font-size: 1.2em;
+    width: 28px;
+    text-align: center;
+}
+
+/* --- Header --- */
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    height: 72px;
+}
+.logo {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+.logo h1 {
+    font-size: 1.5em;
+    margin: 0;
+    color: #5bbcff;
+    letter-spacing: 1px;
+}
+.logo span {
+    font-size: 1em;
+    color: #e3e6eb;
+    margin-top: -2px;
+}
+.header-links {
+    display: flex;
+    gap: 18px;
+}
+.header-links a {
+    color: #5bbcff;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1.08em;
+    transition: color 0.2s;
+}
+.header-links a:hover {
+    color: #fff;
+}
+
+/* --- Main --- */
+main {
+    flex: 1 1 auto;
+    padding: 40px 60px;
+    min-width: 0;
+    height: 100%;
+    overflow-y: auto;
+}

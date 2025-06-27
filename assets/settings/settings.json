@@ -1,0 +1,18 @@
+{
+    "names": [
+        "орбит"
+    ],
+    "usevoice": true,
+    "voicename": "Orbit",
+    "needname": false,
+    "volume": 1,
+    "tray_view": {
+        "functions": true,
+        "logs": true,
+        "sync": true,
+        "modules": true,
+        "restart": false,
+        "settings": true,
+        "exit": true
+    }
+}

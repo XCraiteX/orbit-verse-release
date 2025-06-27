@@ -1,0 +1,40 @@
+{
+    "cs2": {
+        "words": [
+            "кэс",
+            "каэс"
+        ],
+        "gameid": "730",
+        "exe": "cs2.exe",
+        "flag": "sure"
+    },
+    "phasmophobia": {
+        "words": [
+            "мы фоби",
+            "фазам",
+            "фаза ну"
+        ],
+        "gameid": "739630",
+        "exe": "-----.exe",
+        "flag": "sure"
+    },
+    "repo": {
+        "words": [
+            "репо",
+            "репу",
+            "репа"
+        ],
+        "gameid": "3241660",
+        "exe": "-----.exe",
+        "flag": "sure"
+    },
+    "warframe": {
+        "words": [
+            "фрейм",
+            "фраим"
+        ],
+        "gameid": "230410",
+        "exe": "Warframe.x64.exe",
+        "flag": "sure"
+    }
+}

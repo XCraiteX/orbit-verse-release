@@ -1,0 +1,150 @@
+{
+    "task-manager": {
+        "target": [
+            "диспетчер"
+        ],
+        "words": [
+            "задач"
+        ],
+        "hotkey": [
+            "Ctrl",
+            "Shift",
+            "Esc"
+        ],
+        "default": true,
+        "flag": "sure"
+    },
+    "restore-browser-page": {
+        "target": [
+            "верн",
+            "восстанов",
+            "эфир"
+        ],
+        "words": [
+            "вкладк"
+        ],
+        "hotkey": [
+            "Ctrl",
+            "Shift",
+            "T"
+        ],
+        "default": false,
+        "flag": "sure"
+    },
+    "windows-params": {
+        "target": [
+            "откр"
+        ],
+        "words": [
+            "параметр"
+        ],
+        "hotkey": [
+            "Win",
+            "I"
+        ],
+        "default": true,
+        "flag": ""
+    },
+    "show-all-windows": {
+        "target": [
+            "покажи"
+        ],
+        "words": [
+            "все окн"
+        ],
+        "hotkey": [
+            "Win",
+            "Tab"
+        ],
+        "default": false,
+        "flag": "sure"
+    },
+    "close-window": {
+        "target": [
+            "закрой",
+            "закрыт"
+        ],
+        "words": [
+            "окно"
+        ],
+        "hotkey": [
+            "Alt",
+            "F4"
+        ],
+        "default": false,
+        "flag": "sure"
+    },
+    "change-language": {
+        "target": [
+            "смени",
+            "меняй"
+        ],
+        "words": [
+            "язык"
+        ],
+        "hotkey": [
+            "Alt",
+            "Shift"
+        ],
+        "default": true,
+        "flag": ""
+    },
+    "previous-track": {
+        "target": [
+            "прошл",
+            "предыдущ"
+        ],
+        "words": [
+            "трек",
+            "песн"
+        ],
+        "hotkey": [
+            "previous track"
+        ],
+        "default": true,
+        "flag": ""
+    },
+    "next-track": {
+        "target": [
+            "следующ"
+        ],
+        "words": [
+            "трек",
+            "песн"
+        ],
+        "hotkey": [
+            "next track"
+        ],
+        "default": true,
+        "flag": ""
+    },
+    "next-wallpaper": {
+        "target": [
+            "переключ",
+            "следующ"
+        ],
+        "words": [
+            "обои"
+        ],
+        "hotkey": [
+            "Ctrl",
+            "m"
+        ],
+        "default": false,
+        "flag": "sure"
+    },
+    "toggle-discord-micro": {
+        "target": [
+            "выключ",
+            "включ"
+        ],
+        "words": [
+            "микро"
+        ],
+        "hotkey": [
+            "PageDown"
+        ],
+        "default": false,
+        "flag": "sure"
+    }
+}

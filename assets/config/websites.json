@@ -1,0 +1,43 @@
+{
+    "browser": {
+        "words": [
+            "браузе"
+        ],
+        "url": "https://google.com",
+        "default": false,
+        "flag": "sure"
+    },
+    "youtube": {
+        "words": [
+            "ютуб",
+            "ютюб"
+        ],
+        "url": "https://youtube.com",
+        "default": true,
+        "flag": "watching"
+    },
+    "wiki": {
+        "words": [
+            "википеди"
+        ],
+        "url": "https://wikipedia.org",
+        "default": false,
+        "flag": "sure"
+    },
+    "aigenis": {
+        "words": [
+            "брокер"
+        ],
+        "url": "https://aigenis.by",
+        "default": false,
+        "flag": "sure"
+    },
+    "alfabank": {
+        "words": [
+            "альф"
+        ],
+        "url": "https://insnc.by",
+        "flag": "sure",
+        "default": false
+    }
+}

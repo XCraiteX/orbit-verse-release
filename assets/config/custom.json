@@ -1,0 +1,68 @@
+{
+    "music": {
+        "target": ["включи"],
+        "words": ["музык"],
+        "execute": [
+            {"open_program": "C:/Users/rlcra/AppData/Roaming/Spotify/Spotify.exe"},
+            {"wait": 1},
+            {"hotkey": ["Space"]},
+            {"hotkey": ["Win", "Down"]}
+        ],
+        "flag": "music"
+    },
+
+    "music_off": {
+        "target": ["выключи"],
+        "words": ["музык"],
+        "execute": [
+            {"kill_task": "Spotify.exe"}
+        ],
+        "flag": "sure"
+    },
+    
+    "music_up": {
+        "target": ["сделай"],
+        "words": ["громче"],
+        "execute": [
+            {"open_program": "C:/Users/rlcra/AppData/Roaming/Spotify/Spotify.exe"},
+            {"wait": 0.2},
+            {"hotkey": ["Ctrl", "Up"]},
+            {"hotkey": ["Ctrl", "Up"]},
+            {"wait": 0.05},
+            {"hotkey": ["Win", "Down"]}
+        ]
+    },
+
+    "music_down": {
+        "target": ["сделай"],
+        "words": ["тише"],
+        "execute": [
+            {"open_program": "C:/Users/rlcra/AppData/Roaming/Spotify/Spotify.exe"},
+            {"wait": 0.2},
+            {"hotkey": ["Ctrl", "Down"]},
+            {"hotkey": ["Ctrl", "Down"]},
+            {"wait": 0.05},
+            {"hotkey": ["Win", "Down"]}
+        ]
+    },
+
+    "close-browser": {
+        "target": ["закрой", "закрыт"],
+        "words": ["браузе"],
+        "execute": [
+            {"kill_task": "opera.exe"}
+        ]   
+    },
+
+    "code-mode": {
+        "target": ["режим"],
+        "words": ["код"],
+        "execute": [
+            {"open_program": "C:/Users/rlcra/AppData/Roaming/Spotify/Spotify.exe"},
+            {"wait": 0.6},
+            {"hotkey": ["Space"]},
+            {"hotkey": ["Win", "Down"]},
+            {"open_program": "C:/Users/rlcra/AppData/Local/Programs/Microsoft VS Code/Code.exe"}
+        ]
+    }
+}

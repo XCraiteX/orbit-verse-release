@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% block title %}Модули{% endblock %}
+{% block content %}
+<h1 style="margin-top: 0;">Модули</h1>
+<div class="data-block" style="width: 100%; max-width: none; box-sizing: border-box;">
+    <form id="tgremote-form" autocomplete="off">
+        <div class="label-flex" style="align-items: center; margin-bottom: 24px; gap: 16px;">
+            <div style="flex:1; min-width:0;">
+                <div style="font-size: 1.15em; font-weight: 600; margin-bottom: 2px;">🧩 Управление через Telegram</div>
+                <div class="hint" style="color:#7faaff; font-size: 0.98em;">Позволяет управлять компьютером через Telegram-бота. Включите, чтобы настроить параметры доступа.</div>
+            </div>
+            <label class="switch" style="margin-left: auto;">
+                <input type="checkbox" id="tgremote-enabled">
+                <span class="slider round"></span>
+            </label>
+        </div>
+        <div id="tgremote-fields" style="display: none; margin-top: 24px;">
+            <label style="display:block; width:100%; margin-bottom: 28px;">
+                <span style="font-weight:500; display:block; margin-bottom:8px;">🤖 Токен бота</span>
+                <input type="text" id="tgremote-token" name="token" class="def-input" style="width:100%; margin-top:8px;" placeholder="Введите токен Telegram-бота">
+                <span class="hint">*Токен можно получить у <a href='https://t.me/BotFather'  style="color: #49b6fe;" target='_blank'>@BotFather</a> после создания бота</span>
+            </label>
+            <label style="display:block; width:100%; margin-bottom: 28px;">
+                <span style="font-weight:500; display:block; margin-bottom:8px;">👤 Ваш Telegram User ID</span>
+                <input type="text" id="tgremote-userid" name="user_id" class="def-input" style="width:100%; margin-top:8px;" placeholder="Введите свой Telegram User ID">
+                <span class="hint">*User ID можно узнать через бота <a href='https://t.me/ff_uid_bot' style="color: #49b6fe;" target='_blank'>@ff_uid_bot</a></span>
+            </label>
+            <div class="info-block" style="background:#232e45; color:#a3c7ff; border-radius:8px; padding:12px 16px; margin-bottom: 24px; font-size:0.98em;">
+                <b>Зачем это нужно?</b><br>
+                <ul style="margin: 8px 0 0 18px; padding: 0; color:#a3c7ff;">
+                    <li>Включайте и выключайте компьютер удалённо</li>
+                    <li>Получайте скриншоты экрана прямо в Telegram</li>
+                </ul>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Общая кнопка сохранения для всех модулей -->
+<div class="btn-with-status" style="margin-top: 32px; width:100%;">
+    <button type="button" id="save-all-modules" style="width:100%; font-size:1.08em;">💾 Сохранить все модули</button>
+    <div id="save-all-status"></div>
+</div>
+
+<style>
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 24px;
+}
+.switch input {display:none;}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 24px;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px; width: 18px;
+  left: 3px; bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+input:checked + .slider {
+  background-color: #4fa3ff;
+}
+input:checked + .slider:before {
+  transform: translateX(24px);
+}
+.hint {
+  color: #7faaff;
+  font-size: 0.97em;
+  margin-top: 4px;
+  display: block;
+}
+.info-block {
+  background: #232e45;
+  color: #a3c7ff;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 24px;
+  font-size: 0.98em;
+}
+.data-block {
+  width: 100% !important;
+  max-width: none !important;
+  box-sizing: border-box;
+}
+</style>
+
+<script>
+let tgremote = {};
+
+async function loadTgRemote() {
+    // Получаем настройки (пример: /api/modules/tgremote)
+    const resp = await axios.get('/api/modules/tgremote');
+    tgremote = resp.data;
+    document.getElementById('tgremote-enabled').checked = !!tgremote.enabled;
+    document.getElementById('tgremote-token').value = tgremote.token || '';
+    document.getElementById('tgremote-userid').value = tgremote.user_id || '';
+    updateTgRemoteFields();
+}
+
+function updateTgRemoteFields() {
+    const enabled = document.getElementById('tgremote-enabled').checked;
+    document.getElementById('tgremote-fields').style.display = enabled ? '' : 'none';
+}
+
+document.getElementById('tgremote-enabled').addEventListener('change', updateTgRemoteFields);
+
+// Общая функция сохранения всех модулей
+document.getElementById('save-all-modules').addEventListener('click', async function() {
+    const enabled = document.getElementById('tgremote-enabled').checked;
+    const token = document.getElementById('tgremote-token').value.trim();
+    const user_id = document.getElementById('tgremote-userid').value.trim();
+    const data = { enabled, token, user_id };
+    
+    try {
+        await axios.post('/api/modules/tgremote', data);
+        document.getElementById('save-all-status').textContent = 'Все модули сохранены!';
+        setTimeout(() => document.getElementById('save-all-status').textContent = '', 2000);
+    } catch (err) {
+        document.getElementById('save-all-status').textContent = 'Ошибка сохранения!';
+    }
+});
+
+loadTgRemote();
+</script>
+{% endblock %}

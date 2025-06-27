@@ -1,0 +1,42 @@
+{
+    "obsidian": {
+        "words": [
+            "обсидиан",
+            "заметки"
+        ],
+        "uri": "E:/Obsidian/Obsidian.exe",
+        "flag": "sure"
+    },
+    "telegram": {
+        "words": [
+            "телеграм"
+        ],
+        "uri": "E:/Telegram Desktop/Telegram.exe",
+        "flag": "sure"
+    },
+    "osu": {
+        "words": [
+            "о со",
+            "о су"
+        ],
+        "uri": "C:/Users/rlcra/AppData/Local/osulazer/current/osu!.exe",
+        "flag": "sure"
+    },
+    "delta": {
+        "words": [
+            "дельт"
+        ],
+        "uri": "C:/DeltaClient/DeltaLoader.exe",
+        "flag": "sure"
+    },
+    "vscode": {
+        "words": [
+            "визуалк",
+            "код",
+            "скотт",
+            "войска"
+        ],
+        "uri": "C:/Users/rlcra/AppData/Local/Programs/Microsoft VS Code/Code.exe",
+        "flag": "sure"
+    }
+}

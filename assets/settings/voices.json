@@ -1,0 +1,27 @@
+{
+    "temp-clear": {
+        "flag": "temp-clear",
+        "uri": "default/system/clear.wav",
+        "default": true
+    },
+    "sync": {
+        "flag": "sync",
+        "uri": "default/system/sync.wav",
+        "default": true
+    },
+    "sure": {
+        "flag": "sure",
+        "uri": "default/system/sure.wav",
+        "default": false
+    },
+    "watching": {
+        "flag": "watching",
+        "uri": "content/watching.wav",
+        "default": false
+    },
+    "music": {
+        "flag": "music",
+        "uri": "content/music.wav",
+        "default": false
+    }
+}

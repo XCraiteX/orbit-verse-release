@@ -1,0 +1,441 @@
+{% extends "base.html" %}
+{% block title %}Команды{% endblock %}
+{% block content %}
+<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+    <h1 style="margin: 0;">Сочетания клавиш</h1>
+    <button id="add-command-btn" type="button">➕ Добавить сочетание</button>
+</div>
+<form id="hotkeys-form">
+    <div id="hotkeys-list"></div>
+    <div class="btn-with-status" style="margin-top: 24px;">
+        <button type="submit">💾 Сохранить изменения</button>
+        <div id="save-status"></div>
+    </div>
+</form>
+
+<!-- Модальное окно для добавления новой команды -->
+<div id="modal-bg" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:#181d27; padding:32px 24px; border-radius:12px; min-width:320px; box-shadow:0 2px 12px #000;">
+        <h2 style="margin-top:0;">Добавить команду</h2>
+        <form id="add-command-form">
+            <label>
+                <span>🔑 Название:</span>
+                <input type="text" name="title" required>
+                <p class="hint">*Название команды (произвольное)</p>
+            </label>
+            <label>
+                <span>🕹️ Триггеры:</span>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div id="add-target-fields" class="target-fields-list"></div>
+                    <button type="button" id="add-target-btn" class="btn btn-secondary btn-sm mb-2 add-target-btn" style="margin-top:0;">➕</button>
+                    <p class="hint target-hint" style="margin: 0 0 0 8px;">*Каждый триггер отдельным полем</p>
+                </div>
+            </label>
+            <label>
+                <span>💭 Ключевые фразы (через запятую):</span>
+                <input type="text" name="words" required>
+                <p class="hint">*Фразы для распознавания (через запятую)</p>
+            </label>
+            <label>
+                <span>⌨️ Сочетание клавиш:</span>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div id="add-hotkey-fields" class="hotkey-fields-list"></div>
+                    <button type="button" id="add-hotkey-btn" class="btn btn-secondary btn-sm mb-2 add-hotkey-btn" style="margin-top:0;">➕</button>
+                    <p class="hint hotkey-hint" style="margin: 0 0 0 8px;">*Каждая клавиша отдельным полем</p>
+                </div>
+            </label>
+            <label style="display: block; width: 100%;">
+                <span style="display: block; margin-bottom: 6px;">📌 Флаг озвучки:</span>
+                <select name="flag" id="add-flag-select" style="width: 100%; box-sizing: border-box;">
+                    <option value="">Отсутствует</option>
+                </select>
+                <p class="hint" style="margin-top: 4px;">*Флаг озвучки для этой команды</p>
+            </label>
+            <div style="display:flex; gap:12px; margin-top:16px;">
+                <button type="submit">✅ Добавить</button>
+                <button type="button" id="close-modal-btn">Отмена</button>
+            </div>
+            <div id="add-status"></div>
+        </form>
+    </div>
+</div>
+
+<style>
+.hotkey-fields-list, #add-hotkey-fields,
+.target-fields-list, #add-target-fields {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 4px;
+}
+.hotkey-field-row, .target-field-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0;
+}
+.add-hotkey-btn, #add-hotkey-btn,
+.add-target-btn, #add-target-btn {
+    padding: 6px;
+    font-size: 18px;
+    min-width: 28px;
+    min-height: 28px;
+    border-radius: 6px;
+    background: #222b3a;
+    color: #4fa3ff;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 8px;
+}
+.add-hotkey-btn:hover, #add-hotkey-btn:hover,
+.add-target-btn:hover, #add-target-btn:hover {
+    background: #26314a;
+}
+.remove-hotkey-btn, .remove-target-btn {
+    padding: 2px 6px;
+    font-size: 16px;
+    min-width: 24px;
+    min-height: 24px;
+    border-radius: 6px;
+    background: #2a2a2a;
+    color: #ff4f4f;
+    border: none;
+    cursor: pointer;
+    margin-left: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.remove-hotkey-btn:hover, .remove-target-btn:hover {
+    background: #3a2323;
+}
+.label-flex {
+    display: flex;
+    align-items: center;
+}
+.label-flex > span {
+    align-items: center;
+    display: flex;
+    height: 32px;
+}
+.hotkey-hint {
+    display: flex;
+    align-items: center;
+    height: 32px;
+}
+</style>
+
+<script>
+let commandsData = {};
+let voiceFlags = [];
+
+async function loadCommands() {
+    const resp = await axios.get('/api/hotkeys');
+    commandsData = resp.data;
+    await loadVoiceFlags();
+    renderCommands();
+}
+
+async function loadVoiceFlags() {
+    const resp = await axios.get('/api/voice/flags');
+    voiceFlags = resp.data;
+}
+
+function renderHotkeyFields(hotkeyArr, idx) {
+    let html = '';
+    if (!Array.isArray(hotkeyArr) || hotkeyArr.length === 0) hotkeyArr = [''];
+    hotkeyArr.forEach((key, i) => {
+        html += `<div class="hotkey-field-row" style="display:flex;align-items:center;margin-bottom:0px;">
+            <input type="text" name="hotkey" value="${key}" data-idx="${idx}" class="lg-input hotkey-input" style="width:120px;">
+            <button type="button" class="remove-hotkey-btn" style="margin-left:6px;">✖</button>
+        </div>`;
+    });
+    return html;
+}
+
+function renderTargetFields(targetArr, idx) {
+    let html = '';
+    if (!Array.isArray(targetArr) || targetArr.length === 0) targetArr = [''];
+    targetArr.forEach((key, i) => {
+        html += `<div class="target-field-row" style="display:flex;align-items:center;margin-bottom:0px;">
+            <input type="text" name="target" value="${key}" data-idx="${idx}" class="lg-input target-input" style="width:120px;">
+            <button type="button" class="remove-target-btn" style="margin-left:6px;">✖</button>
+        </div>`;
+    });
+    return html;
+}
+
+function renderCommands() {
+    const list = document.getElementById('hotkeys-list');
+    list.innerHTML = '';
+    Object.entries(commandsData).forEach(([key, v], idx) => {
+        let wordsValue = Array.isArray(v.words) ? v.words.join(', ') : (v.words || '');
+        const block = document.createElement('div');
+        block.className = 'data-block';
+        block.style.marginBottom = '18px';
+        block.innerHTML = `
+            <div style="display: flex; justify-content: space-between; ">
+                <div style="flex:1;">
+                    <h3 style="margin:0 0 16px 0;">${key}</h3>
+                    <div class="label-flex" style="margin-bottom: 4px;">
+                        <span style="min-width:110px;">🕹️ Триггеры:</span>
+                        <div style="display: flex; align-items: flex-start; gap: 8px;align-items:center;">
+                            <div class="target-fields-list" data-idx="${idx}" style="gap:8px;align-items:center;"></div>
+                            <button type="button" class="add-target-btn" data-idx="${idx}">➕</button>
+                            <p class="hint target-hint" style="margin: 2px 0 0 8px; align-self: center;">*Каждый триггер отдельным полем</p>
+                        </div>
+                    </div>
+                    <div class="label-flex" style="margin-bottom: 8px;">
+                        <span style="min-width:110px;">💭 Фразы:</span>
+                        <input type="text" name="words" value="${wordsValue}" data-idx="${idx}" required class="lg-input">
+                        <p class="hint">*Фразы для распознавания, через запятую</p>
+                    </div>
+                    <div class="label-flex" style="align-items: center;margin-bottom: 4px;">
+                        <span style="min-width:110px;">⌨️ Клавиши:</span>
+                        <div style="display: flex; align-items: flex-start; gap: 8px;align-items:center;">
+                            <div class="hotkey-fields-list" data-idx="${idx}" style="gap:8px;align-items:center;"></div>
+                            <button type="button" class="add-hotkey-btn" data-idx="${idx}">➕</button>
+                            <p class="hint hotkey-hint" style="margin: 2px 0 0 8px; align-self: flex-start;">*Каждая клавиша отдельным полем</p>
+                        </div>
+                    </div>
+                    <div class="label-flex" style=" align-items: center;">
+                        <span style="min-width:110px;">📌 Флаг:</span>
+                        <div class="flag-select-container" style="width:345px;"></div>
+                        <p class="hint">*Флаг озвучки для этой команды</p>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <button type="button" class="delete-command-btn" data-key="${key}" style="background:#a33;">Удалить</button>
+                </div>
+            </div>
+        `;
+        // Обработчик удаления
+        const deleteBtn = block.querySelector('.delete-command-btn');
+        deleteBtn.onclick = async function() {
+            if (confirm(`Удалить команду \"${key}\"?`)) {
+                try {
+                    await axios.delete(`/api/hotkeys/${key}`);
+                    loadCommands();
+                } catch (err) {
+                    alert('Ошибка удаления!');
+                }
+            }
+        };
+        // Hotkey add/remove
+        const hotkeyFieldsList = block.querySelector('.hotkey-fields-list');
+        hotkeyFieldsList.innerHTML = renderHotkeyFields(v.hotkey, idx);
+        hotkeyFieldsList.addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-hotkey-btn')) {
+                e.target.parentElement.remove();
+            }
+        });
+        block.querySelector('.add-hotkey-btn').onclick = function() {
+            const div = document.createElement('div');
+            div.className = 'hotkey-field-row';
+            div.style = 'display:flex;align-items:center;'; //margin-bottom: 4px
+            div.innerHTML = `<input type="text" name="hotkey" class="lg-input hotkey-input" style="width:120px;"><button type="button" class="remove-hotkey-btn">✖</button>`;
+            hotkeyFieldsList.appendChild(div);
+        };
+        // Target add/remove
+        const targetFieldsList = block.querySelector('.target-fields-list');
+        targetFieldsList.innerHTML = renderTargetFields(v.target, idx);
+        targetFieldsList.addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-target-btn')) {
+                e.target.parentElement.remove();
+            }
+        });
+        block.querySelector('.add-target-btn').onclick = function() {
+            const div = document.createElement('div');
+            div.className = 'target-field-row';
+            div.style = 'display:flex;align-items:center;margin-bottom:0px;';
+            div.innerHTML = `<input type="text" name="target" class="lg-input target-input" style="width:120px;"><button type="button" class="remove-target-btn">✖</button>`;
+            targetFieldsList.appendChild(div);
+        };
+        // Флаги
+        const flagSelect = document.createElement('select');
+        flagSelect.name = 'flag';
+        flagSelect.className = 'lg-input';
+        flagSelect.style = "width:345px;"
+        flagSelect.setAttribute('data-idx', idx);
+        const noneOption = document.createElement('option');
+        noneOption.value = '';
+        noneOption.textContent = 'Отсутствует';
+        if (!v.flag || v.flag === '') noneOption.selected = true;
+        flagSelect.appendChild(noneOption);
+        voiceFlags.forEach(flag => {
+            const option = document.createElement('option');
+            option.value = flag;
+            option.textContent = flag;
+            if (v.flag === flag) option.selected = true;
+            flagSelect.appendChild(option);
+        });
+        const flagDiv = block.querySelector('.flag-select-container');
+        flagDiv.appendChild(flagSelect);
+        list.appendChild(block);
+    });
+}
+
+// Модалка
+const modalBg = document.getElementById('modal-bg');
+document.getElementById('add-command-btn').onclick = () => { fillAddFlagSelect(); modalBg.style.display = 'flex'; };
+document.getElementById('close-modal-btn').onclick = () => { modalBg.style.display = 'none'; };
+
+// Заполняем select в модалке
+function fillAddFlagSelect() {
+    const addFlagSelect = document.getElementById('add-flag-select');
+    addFlagSelect.innerHTML = '<option value="">Отсутствует</option>';
+    voiceFlags.forEach(flag => {
+        const option = document.createElement('option');
+        option.value = flag;
+        option.textContent = flag;
+        addFlagSelect.appendChild(option);
+    });
+}
+
+// Hotkey fields в модалке
+function renderAddHotkeyFields() {
+    const container = document.getElementById('add-hotkey-fields');
+    container.innerHTML = '';
+    const div = document.createElement('div');
+    div.className = 'hotkey-field-row';
+    div.style = 'display:flex;align-items:center;margin-bottom:0px;';
+    div.innerHTML = `<input type="text" name="hotkey" class="lg-input hotkey-input" style="width:120px;"><button type="button" class="remove-hotkey-btn">✖</button>`;
+    container.appendChild(div);
+}
+renderAddHotkeyFields();
+document.getElementById('add-hotkey-btn').onclick = function(e) {
+    e.preventDefault();
+    const container = document.getElementById('add-hotkey-fields');
+    const div = document.createElement('div');
+    div.className = 'hotkey-field-row';
+    div.style = 'display:flex;align-items:center;margin-bottom:0px;';
+    div.innerHTML = `<input type="text" name="hotkey" class="lg-input hotkey-input" style="width:120px;"><button type="button" class="remove-hotkey-btn">✖</button>`;
+    container.appendChild(div);
+};
+document.getElementById('add-hotkey-fields').addEventListener('click', function(e) {
+    if (e.target.classList.contains('remove-hotkey-btn')) {
+        e.target.parentElement.remove();
+    }
+});
+
+// Target fields в модалке
+function renderAddTargetFields() {
+    const container = document.getElementById('add-target-fields');
+    container.innerHTML = '';
+    const div = document.createElement('div');
+    div.className = 'target-field-row';
+    div.style = 'display:flex;align-items:center;margin-bottom:0px;';
+    div.innerHTML = `<input type="text" name="target" class="lg-input target-input" style="width:120px;"><button type="button" class="remove-target-btn">✖</button>`;
+    container.appendChild(div);
+}
+renderAddTargetFields();
+document.getElementById('add-target-btn').onclick = function(e) {
+    e.preventDefault();
+    const container = document.getElementById('add-target-fields');
+    const div = document.createElement('div');
+    div.className = 'target-field-row';
+    div.style = 'display:flex;align-items:center;margin-bottom:0px;';
+    div.innerHTML = `<input type="text" name="target" class="lg-input target-input" style="width:120px;"><button type="button" class="remove-target-btn">✖</button>`;
+    container.appendChild(div);
+};
+document.getElementById('add-target-fields').addEventListener('click', function(e) {
+    if (e.target.classList.contains('remove-target-btn')) {
+        e.target.parentElement.remove();
+    }
+});
+
+// После загрузки флагов заполняем select
+async function loadAll() {
+    await loadVoiceFlags();
+    fillAddFlagSelect();
+    await loadCommands();
+}
+
+// Модалка: обновлять select при открытии
+modalBg.addEventListener('show', fillAddFlagSelect);
+
+document.getElementById('add-command-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const wordsRaw = form.words.value.trim();
+    let words;
+    if (wordsRaw === '') {
+        words = [];
+    } else if (wordsRaw.includes(',')) {
+        words = wordsRaw.split(',').map(s => s.trim()).filter(Boolean);
+    } else {
+        words = [wordsRaw];
+    }
+    // Собираем триггеры как массив
+    const target = Array.from(form.querySelectorAll('input[name="target"]'))
+        .map(input => input.value.trim())
+        .filter(Boolean);
+    // Собираем хоткей как массив
+    const hotkey = Array.from(form.querySelectorAll('input[name="hotkey"]'))
+        .map(input => input.value.trim())
+        .filter(Boolean);
+    const data = {
+        title: form.title.value.trim(),
+        target,
+        words,
+        hotkey,
+        flag: form.flag.value
+    };
+    try {
+        await axios.post('/api/hotkeys', data);
+        document.getElementById('add-status').textContent = 'Добавлено!';
+        form.reset();
+        renderAddTargetFields();
+        renderAddHotkeyFields();
+        setTimeout(() => {
+            document.getElementById('add-status').textContent = '';
+            modalBg.style.display = 'none';
+        }, 1000);
+        loadCommands();
+    } catch (err) {
+        document.getElementById('add-status').textContent = 'Ошибка!';
+    }
+});
+
+document.getElementById('hotkeys-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const blocks = document.querySelectorAll('#hotkeys-list .data-block');
+    let ok = true;
+    for (let i = 0; i < blocks.length; i++) {
+        const title = blocks[i].querySelector('h3').textContent.trim();
+        // Собираем триггеры как массив
+        const target = Array.from(blocks[i].querySelectorAll('input[name="target"]'))
+            .map(input => input.value.trim())
+            .filter(Boolean);
+        const wordsRaw = blocks[i].querySelector('input[name="words"]').value.trim();
+        let words;
+        if (wordsRaw === '') {
+            words = [];
+        } else if (wordsRaw.includes(',')) {
+            words = wordsRaw.split(',').map(s => s.trim()).filter(Boolean);
+        } else {
+            words = [wordsRaw];
+        }
+        // Собираем хоткей как массив
+        const hotkey = Array.from(blocks[i].querySelectorAll('input[name="hotkey"]'))
+            .map(input => input.value.trim())
+            .filter(Boolean);
+        const flag = blocks[i].querySelector('select[name="flag"]').value;
+        const key = Object.keys(commandsData)[i];
+        try {
+            await axios.put(`/api/hotkeys/${key}`, { title, target, words, hotkey, flag });
+        } catch (err) {
+            ok = false;
+        }
+    }
+    document.getElementById('save-status').textContent = ok ? 'Сохранено!' : 'Ошибка сохранения!';
+    setTimeout(() => document.getElementById('save-status').textContent = '', 2000);
+    loadCommands();
+});
+
+loadAll();
+</script>
+{% endblock %} 

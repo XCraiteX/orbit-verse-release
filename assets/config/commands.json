@@ -1,0 +1,62 @@
+{
+    "cmd": {
+        "target": [
+            "открой",
+            "запусти"
+        ],
+        "words": [
+            "командную строку"
+        ],
+        "cmd": "start cmd",
+        "default": true,
+        "flag": "sure"
+    },
+    "appdata": {
+        "target": [
+            "открой",
+            "запусти"
+        ],
+        "words": [
+            "об дат"
+        ],
+        "cmd": "explorer %appdata%",
+        "default": true,
+        "flag": "sure"
+    },
+    "explorer": {
+        "target": [
+            "открой",
+            "запусти"
+        ],
+        "words": [
+            "проводник"
+        ],
+        "cmd": "explorer",
+        "default": true,
+        "flag": "sure"
+    },
+    "calculator": {
+        "target": [
+            "открой",
+            "запусти"
+        ],
+        "words": [
+            "калькулятор"
+        ],
+        "cmd": "start calc",
+        "default": true,
+        "flag": "sure"
+    },
+    "cursor": {
+        "target": [
+            "открой",
+            "запусти"
+        ],
+        "words": [
+            "курсор"
+        ],
+        "cmd": "code",
+        "default": false,
+        "flag": "sure"
+    }
+}

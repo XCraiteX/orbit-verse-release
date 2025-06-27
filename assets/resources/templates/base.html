@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Настройки{% endblock %}</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div class="layout">
+        <header>
+            <div class="header-content">
+                <div class="logo">
+                    <h1>Orbit Verse</h1>
+                    <span>Assistant</span>
+                </div>
+                <div class="header-links">
+                    <a href="https://redlite.ru/orbit" target="_blank">Website</a>
+                    <a href="https://discord.gg/mPKa2sUrmZ" target="_blank">Discord</a>
+                    <a href="https://t.me/redlite_clan" target="_blank">Telegram</a>
+                </div>
+            </div>
+        </header>
+        <div class="main-container">
+            <aside class="sidebar">
+                <nav>
+                    <a href="/" {% if request.url.path == '/' %}class="active"{% endif %}>
+                        <span class="nav-icon">⚙️</span>
+                        <span>Основные</span>
+                    </a>
+                    <a href="/modules" {% if request.url.path == '/modules' %}class="active"{% endif %}>
+                        <span class="nav-icon">🧩</span>
+                        <span>Модули</span>
+                    </a>
+                    <a href="/voice" {% if request.url.path == '/voice' %}class="active"{% endif %}>
+                        <span class="nav-icon">🎤</span>
+                        <span>Флаги</span>
+                    </a>
+                    <a href="/programs" {% if request.url.path == '/programs' %}class="active"{% endif %}>
+                        <span class="nav-icon">💻</span>
+                        <span>Программы</span>
+                    </a>
+                    <a href="/files" {% if request.url.path == '/files' %}class="active"{% endif %}>
+                        <span class="nav-icon">📁</span>
+                        <span>Файлы</span>
+                    </a>
+                    <a href="/websites" {% if request.url.path == '/websites' %}class="active"{% endif %}>
+                        <span class="nav-icon">🌐</span>
+                        <span>Браузер</span>
+                    </a>
+                    <a href="/steam" {% if request.url.path == '/steam' %}class="active"{% endif %}>
+                        <span class="nav-icon">🎮</span>
+                        <span>Steam</span>
+                    </a>
+                    <a href="/commands" {% if request.url.path == '/commands' %}class="active"{% endif %}>
+                        <span class="nav-icon">🛠️</span>
+                        <span>Команды</span>
+                    </a>
+                    <a href="/hotkeys" {% if request.url.path == '/hotkeys' %}class="active"{% endif %}>
+                        <span class="nav-icon">⌨️</span>
+                        <span>Клавиши</span>
+                    </a>
+                    <a href="/writing" {% if request.url.path == '/writing' %}class="active"{% endif %}>
+                        <span class="nav-icon">📋</span>
+                        <span>Тексты</span>
+                    </a>
+                    <a href="/profile" {% if request.url.path == '/profile' %}class="active"{% endif %}>
+                        <span class="nav-icon">🌎</span>
+                        <span>Профиль</span>
+                    </a>
+                </nav>
+            </aside>
+            <main style="flex: 1 1 auto;overflow-y: auto; min-height: 0;max-height: 84vh;">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+</body>
+</html> 
